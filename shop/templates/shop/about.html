@@ -1,0 +1,70 @@
+{% extends 'shop/basic.html' %}
+
+{% block title %} About Us{% endblock %}
+{% block body %}
+
+<style>
+  .col-md-4 {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+</style>
+
+
+<main role="main">
+  <div class="jumbotron">
+    <div class="container">
+      <h1 class="display-3">Welcome to My Awesome Cart!</h1>
+      <p>At My Awesome Cart, we are committed to delivering quality products at great prices. From electronics to fashion, we offer a diverse range of items to cater to your needs.</p>
+      <p>Our curated selection ranges from top-tier electronics to stylish apparel, all designed to fit your lifestyle.</p>
+      <p><a class="btn btn-primary btn-lg" href="{% url 'LearnMore' %}" role="button">Learn more »</a></p>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <h2>Quality Products</h2>
+        <p>We source only the best products, ensuring you get the best value for your money. Our team of experts meticulously curates our catalog to bring you top-rated brands and the latest trends.</p>
+        <a class="btn btn-secondary" href="{% url 'QualityProducts' %}" role="button">View details »</a>
+      </div>
+      <div class="col-md-4">
+        <h2>Fast Delivery</h2>
+        <p>With our efficient logistics network, your orders are delivered promptly, right to your doorstep.</p>
+        <a class="btn btn-secondary" href="{% url 'FastDelivery' %}" role="button">View details »</a>
+      </div>
+      <div class="col-md-4">
+        <h2>Customer Support</h2>
+        <p>Our dedicated support team is here to help you with any queries or issues you may have. We pride ourselves on offering excellent customer service, ensuring that your shopping experience is smooth and hassle-free from start to finish.</p>
+        <a class="btn btn-secondary" href="{% url 'CustomerSupport' %}" role="button">View details »</a>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="row">
+      <div class="col-md-6">
+        <h2>Our Mission</h2>
+        <p>At My Awesome Cart, our mission is to revolutionize the way people shop online by offering an unparalleled shopping experience. We aim to be your one-stop shop for everything you need, backed by our commitment to quality, value, and service.</p>
+      </div>
+      <div class="col-md-6">
+        <h2>Why Choose Us?</h2>
+        <p>We go beyond just selling products. Our platform is built around our customers, ensuring that you get the best shopping experience possible. From personalized recommendations to secure payment options, we take care of every detail so you can shop with confidence.</p>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="row">
+      <div class="col-md-12">
+        <h2>Join Our Community</h2>
+        <p>We believe in building a community of like-minded shoppers who value quality and convenience. Stay connected with us through our blog, social media channels, and newsletters to stay up-to-date with the latest trends, special offers, and more.</p>
+        <p><a class="btn btn-primary" href="#" role="button">Sign Up for Our Newsletter »</a></p>
+      </div>
+    </div>
+  </div> <!-- /container -->
+</main>
+
+{% endblock %}

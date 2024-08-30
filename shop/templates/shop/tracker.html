@@ -1,0 +1,107 @@
+{% extends 'shop/basic.html' %}
+{% block title%} My Awesome Cart Tracker{% endblock %}
+{% block body %}
+<div class="container">
+    <div class="col my-4">
+        <h2>Enter your Order Id and Email address to track your order</h2>
+        <form method="post" action="#" id="trackerForm">{% csrf_token %}
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="orderIdInput">Order Id</label>
+                    <input type="text" class="form-control" id="orderIdInput" name="orderId" placeholder="Order Id">
+            </div>
+            <div class="form-group col-md-6">
+                    <label for="emailInput">Email</label>
+                    <input type="email" class="form-control" id="emailInput" name="email" placeholder="Email">
+            </div>
+
+                <button type="submit" class="btn btn-primary">Track Order</button>
+            </div>
+    </div>
+    <div class="col my-4">
+        <h2>Your Order Status</h2>
+        <div class="my-4">
+            <ul class="list-group" id="items">
+                Enter your order Id and Email and click Track Order to find details about your order!
+            </ul>
+        </div>
+        <h2>Your Order Details</h2>
+        <div class="my-4">
+            <ul class="list-group" id="citems">
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script>
+$('#trackerForm').submit(function(event) {
+    $('#items').empty();
+    $('#citems').empty();  // Clear previous items
+
+    var formData = {
+        'orderId': $('input[name=orderId]').val(),
+        'email': $('input[name=email]').val(),
+        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: '/shop/tracker/',
+        data: formData,
+        encode: true,
+        dataType: 'json'  // Expect JSON response
+    })
+    .done(function(data) {
+        try {
+            console.log("Raw Data:", data);  // No need for JSON.parse()
+
+            if (Array.isArray(data) && data.length === 2) {
+                var updates = data[0] || [];
+                var cart = data[1] || {};
+
+                // Handle updates
+                if (Array.isArray(updates) && updates.length > 0) {
+                    updates.forEach(function(update) {
+                        let text = update['text'] || 'No update text';
+                        let time = update['time'] || 'Unknown time';
+                        $('#items').append(`<li class="list-group-item d-flex justify-content-between align-items-center">
+                            ${text}
+                            <span class="badge badge-primary badge-pill">${time}</span>
+                        </li>`);
+                    });
+                } else {
+                    $('#items').append(`<li class="list-group-item d-flex justify-content-between align-items-center">
+                        Sorry, We are not able to fetch this order id and email. Make sure to type correct order Id and email</li>`);
+                }
+
+                // Handle cart
+                if (typeof cart === 'object') {
+                    for (let item in cart) {
+                        if (cart.hasOwnProperty(item)) {
+                            let name = cart[item]['name'] || 'Unknown item';
+                            let qty = cart[item]['quantity'] || 0;
+                            let price = cart[item]['price'] || 0;
+                            $('#citems').append(`<li class="list-group-item d-flex justify-content-between align-items-center">
+                                ${name} - $${price}
+                                <span class="badge badge-primary badge-pill">${qty}</span>
+                            </li>`);
+                        }
+                    }
+                }
+            } else {
+                console.error('Unexpected response format:', data);
+            }
+        } catch (e) {
+            console.error('Error processing response:', e);
+        }
+    })
+    .fail(function(jqXHR, textStatus, errorThrown) {
+        console.error('AJAX request failed:', textStatus, errorThrown);
+    });
+
+    event.preventDefault();
+});
+
+</script>
+{% endblock %}

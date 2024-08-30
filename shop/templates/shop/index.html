@@ -1,0 +1,450 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <title> </title>
+ <style>
+ .card img {
+    width: 100%;
+    height: 200px; /* Set a fixed height */
+    object-fit: cover; /* Ensure the image covers the area without distortion */
+    object-position: center; /* Center the image */
+    margin-bottom: 10px; /* Optional: Add some space below the image */
+}
+
+  .carousel .card {
+      width: 18rem;
+      height: 24rem; /* Adjust the height as necessary */
+  }
+  .carousel .card img {
+      width: 250 px;
+      height: 300 px; /* Adjust the height as necessary */
+      object-fit: cover; /* This ensures the image covers the given area without distorting */
+  }
+  .carousel .card-body {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: calc(100% - 15rem);
+  }
+  .card .btn {
+            margin: 5px 0; /* Add margin to space out the buttons */
+        }
+
+    #demo2 {
+            margin-bottom: 20px;
+        }
+
+  #demo3 {
+            margin-bottom: 20px;
+        }
+
+    #demo4 {
+            margin-bottom: 20px;
+        }
+
+   .btn-group .btn {
+        margin-right: 5px; /* Add space between the buttons */
+    }
+
+   .truncate {
+            overflow: hidden;
+        }
+   .carousel-control-prev, .carousel-control-next {
+            width: 5%;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            background-color: rgba(0, 123, 255, 0.5); /* Add background color with transparency */
+            border-radius: 50%; /* Make them circular */
+            height: 50px; /* Height of the button */
+            width: 50px; /* Width of the button */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+.carousel-control-prev {
+    left: -10%; /* Move the previous button further outside */
+}
+
+.carousel-control-next {
+    right: -10%; /* Move the next button further outside */
+}
+
+#quickViewModal .carousel-inner img {
+    width: 100%;
+    height: auto;  /* Maintains aspect ratio */
+    max-height: 400px; /* Adjust as necessary */
+    object-fit: contain; /* Ensures the image fits within the box */
+}
+
+#quickViewModal .carousel-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 400px; /* Adjust this to the desired height */
+    background-color: #f8f9fa; /* Optional: adds a background color around the image */
+}
+
+.category, .sub-category, .price, .description {
+    font-weight: bold;
+}
+
+.carousel-container {
+    margin-bottom: 20px; /* Adjust this value as needed */
+}
+
+
+
+</style>
+  </head>
+  <body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="/shop">My Awesome Cart</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/shop">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/shop/about">About Us</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/shop/tracker">Tracker</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/shop/contact">Contact Us</a>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0" method="GET" action="{% url 'search' %}">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="query" value="{{ query|default:'' }}">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+
+    <button type="button" class="btn btn-secondary mx-2" id="popcart" data-container="body" data-toggle="popover" data-placement="bottom" data-html="true" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">
+      Cart(<span id="cart">0</span>)
+    </button>
+  </div>
+</nav>
+
+<div class="container mt-4">
+  {% for category, prod_chunks, range_obj, nSlides in allProds %}
+    <h4 style="margin-top: 30px;">Flash Sale On {{ category }} - Recommended Items</h4>
+    <div id="demo{{ forloop.counter }}" class="carousel slide my-3" data-ride="carousel" style="margin-bottom: 30px;">
+      <!-- Carousel Indicators -->
+      <ul class="carousel-indicators">
+        {% for i in range_obj %}
+          <li data-target="#demo{{ forloop.counter }}" data-slide-to="{{ i }}" class="{% if forloop.first %}active{% endif %}"></li>
+        {% endfor %}
+      </ul>
+
+      <!-- Carousel Items -->
+      <div class="carousel-inner">
+        {% for chunk in prod_chunks %}
+          <div class="carousel-item {% if forloop.first %}active{% endif %}">
+            <div class="row">
+              {% for product in chunk %}
+                <div class="col-md-3">
+                  <div class="card align-items-center">
+                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                    <div class="card-body">
+                      <h5 class="card-title" id="name{{ product.id }}">{{ product.product_name|default:"Unnamed Product" }}</h5>
+                      <p class="card-text truncate">{{ product.desc|truncatechars:50 }}</p>
+                      <b>$<span id="price{{ product.id }}" class="price">{{ product.price }}</span></b>
+                      <div id="div{{ product.id }}" class="divpr">
+                        <button id="{{ product.id }}" class="btn btn-primary cart" data-name="{{ product.product_name }}" data-price="{{ product.price }}">Add To Cart</button>
+                        <a href="{% url 'quickview' product.id %}" class="btn btn-primary quickview" data-toggle="modal" data-target="#quickViewModal">QuickView</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Carousel controls -->
+      <a class="carousel-control-prev" data-ride="carousel" href="#demo{{ forloop.counter }}" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" data-ride="carousel" href="#demo{{ forloop.counter }}" role="button" data-slide="next">
+        <span class="carousel-control-next-icon"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
+  {% endfor %}
+</div>
+
+
+
+<!-- QuickView Modal -->
+<div class="modal fade" id="quickViewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Quick View</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="carouselExampleIndicators" class="carousel slide">
+          <div class="carousel-inner"></div>
+        </div>
+        <h5 class="modal-title"></h5>
+        <p class="category"><strong></strong></p>
+        <p class="sub-category"><strong></strong></p>
+        <p class="price"><strong></strong></p>
+        <p class="description"><strong></strong></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+<script>
+// Check if the cart exists in localStorage, otherwise create an empty cart
+if (localStorage.getItem('cart') == null) {
+    var cart = {};
+} else {
+    cart = JSON.parse(localStorage.getItem('cart'));
+    updateCart(cart); // Update the cart display if items are already in the cart
+}
+
+// Event listener for "Add to Cart" buttons
+$('.divpr').on('click', 'button.cart', function() {
+    var idstr = this.id.toString();
+
+    // Get the name and price elements
+    var nameElement = document.getElementById('name' + idstr);
+    var priceElement = document.getElementById('price' + idstr);
+
+    // Check if the elements exist and get their values
+    var name = nameElement ? nameElement.textContent : "Unnamed Product"; // Fallback if name is not found
+    var price = priceElement ? parseFloat(priceElement.innerHTML.replace(/[^0-9.]/g, '')) : null;
+
+    if (cart[idstr] != undefined) {
+        cart[idstr].quantity += 1;
+    } else {
+        cart[idstr] = { quantity: 1, name: name, price: price };
+    }
+
+    // Check if the name is still empty, which would indicate an issue
+    if (!name) {
+        console.error(`Failed to retrieve name for product ID: ${idstr}`);
+    }
+
+    console.log("Product ID:", idstr);
+console.log("Name Element:", nameElement);
+console.log("Price Element:", priceElement);
+
+
+    updateCart(cart);
+});
+
+
+// Function to update the popover with cart details
+function updatePopover(cart) {
+    var popStr = "<h5>Your Shopping Cart</h5><div class='mx-2 my-2'>";
+    var i = 1;
+    for (var item in cart) {
+        popStr += "<b>" + i + "</b>. " + cart[item].name + "... Qty: " + cart[item].quantity + "<br>";
+        i += 1;
+    }
+    popStr += "</div> <a href='/shop/checkout'><button class='btn btn-primary' id='checkout'>Checkout</button></a> " +
+              "<button class='btn btn-danger' id='clearCart'>Clear Cart</button>";
+
+    document.getElementById('popcart').setAttribute('data-content', popStr);
+    $('#popcart').popover('show');
+
+    // Attach event listener for the dynamically added "Clear Cart" button
+    $('#popcart').on('shown.bs.popover', function () {
+        var clearCartButton = document.getElementById('clearCart');
+        if (clearCartButton) {
+            clearCartButton.addEventListener('click', function() {
+                clearCart();
+                $('#popcart').popover('hide');
+            });
+        }
+    });
+}
+
+// Function to clear the cart
+function clearCart() {
+    cart = {}; // Clear the cart object
+    localStorage.setItem('cart', JSON.stringify(cart)); // Update localStorage
+    updateCart(cart); // Update the cart display
+    $('#popcart').popover('hide'); // Hide the popover after clearing the cart
+}
+
+// Function to update the cart display and localStorage
+function updateCart(cart) {
+    var sum = 0;
+    var totalPrice = 0;
+
+    for (var item in cart) {
+        if (cart.hasOwnProperty(item)) {
+            sum += cart[item].quantity;
+            totalPrice += cart[item].quantity * cart[item].price;
+        }
+    }
+    document.getElementById('cart').innerHTML = sum;
+    localStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem('totalPrice', totalPrice.toFixed(2));
+    updatePopover(cart);
+}
+
+// Assuming the clear cart button calls the clearCart function
+document.getElementById('clearCartButton')?.addEventListener('click', clearCart);
+
+
+
+
+
+
+// Quick view functionality
+document.querySelectorAll('.quickview').forEach(button => {
+    button.addEventListener('click', function(event) {
+        event.preventDefault();
+        var url = this.getAttribute('href');
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const modalBody = document.querySelector('#quickViewModal .modal-body');
+
+                // Set the product name
+                const nameElement = modalBody.querySelector('h5.modal-title');
+                if (nameElement) {
+                    nameElement.textContent = data.name || 'No name available';
+                }
+
+                // Set the description
+                const descriptionElement = modalBody.querySelector('p.description');
+                if (descriptionElement) {
+                    descriptionElement.textContent = `Description: ${data.description || 'No description available'}`;
+                }
+
+                // Set the category
+                const categoryElement = modalBody.querySelector('p.category');
+                if(categoryElement) {
+                     categoryElement.textContent = `Category: ${data.category || 'Not specified'}`;
+                }
+
+                // Set the sub-category
+                const subCategoryElement = modalBody.querySelector('p.sub-category');
+                if (subCategoryElement) {
+                    subCategoryElement.textContent = `Sub-category: ${data.subcategory || 'Not specified'}`;
+                }
+
+                // Set the price
+                const priceElement = modalBody.querySelector('p.price');
+                if (priceElement) {
+                    priceElement.textContent = `Price: $.${data.price || 'Not specified'}`;
+                }
+
+                // Handle images in the carousel
+                const carouselInner = modalBody.querySelector('.carousel-inner');
+                if (carouselInner) {
+                    carouselInner.innerHTML = ''; // Clear previous images
+
+                    if (data.images && data.images.length > 0) {
+                        data.images.forEach((image, index) => {
+                            const activeClass = index === 0 ? 'active' : '';
+                            const carouselItem = `
+                                <div class="carousel-item ${activeClass}">
+                                    <img src="${image.url}" class="d-block w-100" alt="${data.name}">
+                                </div>`;
+                            carouselInner.insertAdjacentHTML('beforeend', carouselItem);
+                        });
+                    }
+                } else {
+                    console.error('Carousel inner element not found.');
+                }
+
+                // Show the modal
+                const quickViewModal = new bootstrap.Modal(document.getElementById('quickViewModal'));
+                quickViewModal.show();
+            })
+            .catch(error => {
+                console.error('Error loading QuickView:', error);
+            });
+    });
+});
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Select all carousel containers
+    const carousels = document.querySelectorAll('.carousel-container');
+
+    // Loop through each carousel container and add margin-bottom dynamically
+    carousels.forEach(function(carousel, index) {
+        // Add margin-bottom to each carousel
+        carousel.style.marginBottom = '20px'; // Adjust value as needed
+    });
+});
+
+ // Log generated carousel ids for debugging
+  console.log("Carousel IDs generated:");
+  {% for category, prod_list, range_obj, nSlides in allProds %}
+    console.log("#demo{{ forloop.counter }}");
+  {% endfor %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function truncateText(selector, maxWords) {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(element => {
+                let words = element.innerHTML.split(' ');
+                if (words.length > maxWords) {
+                    element.innerHTML = words.slice(0, maxWords).join(' ') + '...';
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            truncateText('.truncate', 7); // Apply to all elements with the 'truncate' class
+        });
+</script>
+
+  </body>
+</html>

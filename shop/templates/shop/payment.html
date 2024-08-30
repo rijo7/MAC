@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 2em;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            background-color: #0070ba;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #005f9e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Payment Page</h1>
+        <p>Click the button below to pay with PayPal.</p>
+        <button id="paypal-button">Pay with PayPal</button>
+    </div>
+    <script src="https://www.paypal.com/sdk/js?client-id=AdpVDwSc3jMr8hYqipjxD7Cx3QnMfgKuuWdKBXo1y-eGm7FWXabRwf2vQIo11dK5YjyqT_B6H_mQUlT7&currency=USD"></script>
+
+    <script>
+        document.getElementById('paypal-button').addEventListener('click', function () {
+            fetch('/shop/payment/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.approval_url) {
+                    window.location.href = data.approval_url;
+                } else {
+                    alert('Payment failed. Please try again.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
