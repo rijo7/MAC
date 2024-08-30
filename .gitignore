@@ -155,14 +155,14 @@ dmypy.json
 cython_debug/
 
 #Media and Static Files
-media/
+media/images/
 static/
 
 #Django Migration Files
 shop/migrations/
 
 #settings
-settings/
+mac/settings/
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
