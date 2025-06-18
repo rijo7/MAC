@@ -15,6 +15,7 @@ from pathlib import Path
 from decouple import config
 import stripe
 from dotenv import load_dotenv
+import dj_database_url
 
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -30,9 +31,9 @@ STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
 STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['your-service-name.onrender.com']
 
 
 # Application definition
@@ -96,9 +97,6 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = 'macweb1111@gmail.com'
 EMAIL_SUBJECT_PREFIX = 'MAC '
 
-
-
-
 WSGI_APPLICATION = 'mac.wsgi.application'
 
 
@@ -106,12 +104,11 @@ WSGI_APPLICATION = 'mac.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default='sqlite:///' + str(BASE_DIR / "db.sqlite3"),
+        conn_max_age=600
+    )
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -159,3 +156,16 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Cloudinary
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dogjqmzyt',
+    'API_KEY': '775478923756429',
+    'API_SECRET': 'EoTh4iX5Pgf-3OcGePX70N7cxpU',
+}
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# Database
+DATABASES = {
+    'default': dj_database_url.config(default='sqlite:///db.sqlite3')
+}
