@@ -1,10 +1,13 @@
-import paypalrestsdk
 from django.conf import settings
 from django.shortcuts import render
 from .models import Product, Contact, Orders, OrderUpdate
 from math import ceil
 from django.http import JsonResponse
+from django.core.mail import send_mail
+from django.views.decorators.csrf import csrf_exempt
 import json
+import stripe
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 # Create your views here.
 from django.http import HttpResponse
@@ -91,7 +94,9 @@ def productView(request, product_id):
 
 
 def checkout(request):
-    if request.method=="POST":
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+
+    if request.method == "POST":
         items_json = request.POST.get('itemsJson', '')
         name = request.POST.get('name', '')
         email = request.POST.get('email', '')
@@ -100,15 +105,43 @@ def checkout(request):
         state = request.POST.get('state', '')
         zip_code = request.POST.get('zip_code', '')
         phone = request.POST.get('phone', '')
-        order = Orders(items_json=items_json, name=name, email=email, address=address, city=city,
-                       state=state, zip_code=zip_code, phone=phone)
+
+        # Save order
+        order = Orders(
+            items_json=items_json,
+            name=name,
+            email=email,
+            address=address,
+            city=city,
+            state=state,
+            zip_code=zip_code,
+            phone=phone
+        )
         order.save()
+
+        # Save order update
         update = OrderUpdate(order_id=order.order_id, update_desc="The order has been placed")
         update.save()
-        thank = True
-        id = order.order_id
-        return render(request, 'shop/checkout.html', {'thank':thank, 'id': id})
-    return render(request, 'shop/checkout.html')
+
+        # Send confirmation email
+        send_mail(
+            'Order Confirmation',
+            f'Thank you for your order, {name}! Your order ID is {order.order_id}.',
+            settings.DEFAULT_FROM_EMAIL,
+            [email],
+            fail_silently=False,
+        )
+
+        # Render thank you page with Stripe key
+        context = {
+            'thank': True,
+            'id': order.order_id,
+            'stripe_pub_key': settings.STRIPE_PUBLISHABLE_KEY
+        }
+        return render(request, 'shop/checkout.html', context)
+
+    # GET request
+    return render(request, 'shop/checkout.html', {'stripe_pub_key': settings.STRIPE_PUBLISHABLE_KEY})
 
 
 def quickview(request, product_id):
@@ -139,65 +172,37 @@ def customer_support(request):
 def learnmore(request):
     return render(request, 'shop/learnmore.html')
 
+@csrf_exempt
+def create_checkout_session(request):
+    stripe.api_key = settings.STRIPE_SECRET_KEY
 
-paypalrestsdk.configure({
-    "mode": settings.PAYPAL_MODE,  # sandbox or live
-    "client_id": settings.PAYPAL_CLIENT_ID,
-    "client_secret": settings.PAYPAL_CLIENT_SECRET,
-})
-
-def create_payment(request):
     if request.method == 'POST':
-        payment = paypalrestsdk.Payment({
-            "intent": "sale",
-            "payer": {
-                "payment_method": "paypal"
-            },
-            "redirect_urls": {
-                "return_url": "http://localhost:8000/payment/execute/",
-                "cancel_url": "http://localhost:8000/payment/cancel/"
-            },
-            "transactions": [{
-                "item_list": {
-                    "items": [{
-                        "name": "Test Product",
-                        "sku": "001",
-                        "price": "10.00",
-                        "currency": "USD",
-                        "quantity": 1
-                    }]
-                },
-                "amount": {
-                    "total": "10.00",
-                    "currency": "USD"
-                },
-                "description": "This is a test payment."
-            }]
-        })
+        try:
+            YOUR_DOMAIN = "http://127.0.0.1:8000"
+            checkout_session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=[
+                    {
+                        'price_data': {
+                            'currency': 'usd',
+                            'product_data': {
+                                'name': 'Your MAC Order',
+                            },
+                            'unit_amount': int(float(request.POST.get('amount')) * 100),  # amount in cents
+                        },
+                        'quantity': 1,
+                    },
+                ],
+                mode='payment',
+                success_url=YOUR_DOMAIN + '/shop/success/',
+                cancel_url=YOUR_DOMAIN + '/shop/cancel/',
+            )
+            return JsonResponse({'id': checkout_session.id})
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
+        
+def success(request):
+    return render(request, 'shop/success.html')
 
-        if payment.create():
-            for link in payment.links:
-                if link.rel == "approval_url":
-                    approval_url = link.href
-                    return JsonResponse({'approval_url': approval_url})
-        else:
-            return JsonResponse({'error': payment.error})
-
-    return render(request, 'shop/payment.html')
-
-def execute_payment(request):
-    payment_id = request.GET.get('paymentId')
-    payer_id = request.GET.get('PayerID')
-
-    payment = paypalrestsdk.Payment.find(payment_id)
-
-    if payment.execute({"payer_id": payer_id}):
-        return render(request, 'shop/payment_success.html')
-    else:
-        return render(request, 'shop/payment_cancel.html')
-
-def payment_success(request):
-    return render(request, 'shop/payment_success.html')
-
-def payment_cancel(request):
-    return render(request, 'shop/payment_cancel.html')
+def cancel(request):
+    return render(request, 'shop/cancel.html')

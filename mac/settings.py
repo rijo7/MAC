@@ -12,7 +12,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
+from decouple import config
+import stripe
+from dotenv import load_dotenv
 
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,12 +25,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-x7vx2+^9-5-q8+%rfyk&^+n)2&(jt%06c_ogfseu1#y%h8m2c-'
+SECRET_KEY = config('SECRET_KEY')
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -74,14 +80,23 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'shop.context_processors.cart_item_count',
             ],
         },
     },
 ]
 
-PAYPAL_CLIENT_ID = 'AdpVDwSc3jMr8hYqipjxD7Cx3QnMfgKuuWdKBXo1y-eGm7FWXabRwf2vQIo11dK5YjyqT_B6H_mQUlT7'
-PAYPAL_CLIENT_SECRET = 'EArjBfdC4x4UXFUKodmUt-VLPyKMsSG1n4TCwV5H5_DrRuIIUm5C61zCDBZlz-m4aytdRotQTscUFvbh'
-PAYPAL_MODE = 'sandbox'  # Use 'live' for real transactions
+# Email settings for sending via Gmail
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = 'macweb1111@gmail.com'
+EMAIL_SUBJECT_PREFIX = 'MAC '
+
+
 
 
 WSGI_APPLICATION = 'mac.wsgi.application'
@@ -133,6 +148,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 
 #Managing media
 MEDIA_URL = '/media/'

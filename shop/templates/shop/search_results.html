@@ -2,7 +2,7 @@
 
 {% block body %}
 <div class="container mt-4">
-    <h1>Search Results Test</h1> <!-- Add this line -->
+    <h1>Search Results </h1> <!-- Add this line -->
     <h3>Search Results for "{{ query }}"</h3>
     <div class="row">
         {% if products %}
@@ -14,7 +14,7 @@
                             <h5 class="card-title">{{ product.product_name }}</h5>
                             <p class="card-text">{{ product.desc|truncatechars:100 }}</p>
                             <p class="card-text"><strong>Rs.{{ product.price }}</strong></p>
-                            <a href="{% url 'quickview' product.id %}" class="btn btn-primary quickview" data-toggle="modal" data-target="#quickViewModal">QuickView</a>
+                            <!-- <a href="{% url 'quickview' product.id %}" class="btn btn-primary quickview" data-toggle="modal" data-target="#quickViewModal">QuickView</a> -->
                         </div>
                     </div>
                 </div>

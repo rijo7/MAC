@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-from .views import create_payment, execute_payment, payment_success, payment_cancel
 
 urlpatterns = [
     path("", views.index, name="ShopHome"),
@@ -16,8 +15,7 @@ urlpatterns = [
     path('customer-support/', views.customer_support, name='CustomerSupport'),
     path('learn-more/', views.learnmore, name='LearnMore'),
     path('search/', views.search, name='search'),
-    path('payment/', views.create_payment, name='create-payment'),
-    path('payment/execute/', views.execute_payment, name='execute-payment'),
-    path('payment/success/', views.payment_success, name='payment-success'),
-    path('payment/cancel/', views.payment_cancel, name='payment-cancel'),
+    path('create-checkout-session/', views.create_checkout_session, name='create-checkout-session'),
+    path('success/', views.success, name='success'),
+    path('cancel/', views.cancel, name='cancel'),
 ]

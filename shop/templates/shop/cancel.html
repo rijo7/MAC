@@ -1,0 +1,10 @@
+{% extends 'shop/basic.html' %}
+{% block title %}Payment Cancelled - MAC{% endblock %}
+
+{% block body %}
+<div class="container text-center my-5">
+    <h2 class="text-danger">⚠️ Payment Cancelled</h2>
+    <p class="lead">Your payment was not completed. You can try again or return to your cart to make changes.</p>
+    <a href="/shop/checkout" class="btn btn-warning mt-3">Try Again</a>
+</div>
+{% endblock %}
