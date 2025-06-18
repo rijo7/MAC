@@ -192,8 +192,6 @@
   {% endfor %}
 </div>
 
-
-
 <!-- QuickView Modal -->
 <div class="modal fade" id="quickViewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -220,11 +218,6 @@
     </div>
   </div>
 </div>
-
-
-
-
-
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -265,8 +258,8 @@ $('.divpr').on('click', 'button.cart', function() {
     }
 
     console.log("Product ID:", idstr);
-console.log("Name Element:", nameElement);
-console.log("Price Element:", priceElement);
+    console.log("Name Element:", nameElement);
+    console.log("Price Element:", priceElement);
 
 
     updateCart(cart);
@@ -326,11 +319,6 @@ function updateCart(cart) {
 
 // Assuming the clear cart button calls the clearCart function
 document.getElementById('clearCartButton')?.addEventListener('click', clearCart);
-
-
-
-
-
 
 // Quick view functionality
 document.querySelectorAll('.quickview').forEach(button => {
@@ -402,7 +390,6 @@ document.querySelectorAll('.quickview').forEach(button => {
     });
 });
 
-
 document.addEventListener("DOMContentLoaded", function() {
     // Select all carousel containers
     const carousels = document.querySelectorAll('.carousel-container');
@@ -419,19 +406,6 @@ document.addEventListener("DOMContentLoaded", function() {
   {% for category, prod_list, range_obj, nSlides in allProds %}
     console.log("#demo{{ forloop.counter }}");
   {% endfor %}
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function truncateText(selector, maxWords) {
             const elements = document.querySelectorAll(selector);
