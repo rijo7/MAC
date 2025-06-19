@@ -33,7 +33,7 @@ STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['your-service-name.onrender.com']
+ALLOWED_HOSTS = ['https://mac-1.onrender.com']
 
 
 # Application definition
