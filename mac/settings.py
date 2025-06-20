@@ -40,6 +40,8 @@ SECURE_SSL_REDIRECT = True
 # Application definition
 
 INSTALLED_APPS = [
+    'cloudinary_storage',
+    'cloudinary',
     'shop.apps.ShopConfig',
     'django.contrib.admin',
     'django.contrib.auth',
