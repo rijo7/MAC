@@ -35,6 +35,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['https://mac-1.onrender.com']
 
+SECURE_SSL_REDIRECT = True
 
 # Application definition
 
