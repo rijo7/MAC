@@ -35,7 +35,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['mac-1.onrender.com', 'localhost', '127.0.0.1']
 
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = os.getenv('RENDER', False) == 'true'
 
 # Application definition
 
